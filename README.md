@@ -1,7 +1,8 @@
-work in progress...
-
 # Collection Visibility Controls
 # Blender 2.8 add-on to control collections visibility
+
+# WARNING
+* This is a kind of hack out Blender render system, so in some cases it may cause crashes while rendering animation. Use with caution, at your own risk.
 
 # INSTALL:
 * Download ZIP file
