@@ -1,5 +1,10 @@
 # Collection Visibility Controls
-# Blender 2.8 add-on to control collections visibility
+# Blender 2.8+ add-on to control collections visibility
+
+# FUNCTION
+* Creates Empty objects for each Collection in the scene to control collection visibility (render, viewport and select) with its Empty object's visibility
+* Checks changes on every frame change
+* Allows you to keyframe collection visibility by keyframing Empty's visibility *(by default collection visibility keyframing in Blender is blocked)
 
 # WARNING
 * This is a kind of hack out Blender render system, so in some cases it may cause crashes while rendering animation. Use with caution, at your own risk.
