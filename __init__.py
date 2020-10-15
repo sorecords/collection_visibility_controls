@@ -27,7 +27,7 @@ bl_info = {
     "blender": (2, 83, 3),
     "location": "Render Settings > Collection Visibility Controls",
     "description": "Control Collections visibility with Empty objects visibility",
-    "warning": "",
+    "warning": "May cause Blender crashes while render animation",
     "wiki_url": "https://github.com/sorecords/collection_visibility_controls/blob/master/README.md",
     "tracker_url": "https://github.com/sorecords/collection_visibility_controls/issues",
     "category": "Render"
