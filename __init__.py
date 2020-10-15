@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 #  COLLECTION VISIBILITY CONTROLS
-#  Adds Empties to each collection 
+#  Control Collections visibility with Empty objects visibility 
 #  (c) 2020 Andrey Sokolov (so_records)
 
 bl_info = {
@@ -26,7 +26,7 @@ bl_info = {
     "version": (1, 0, 0),
     "blender": (2, 83, 3),
     "location": "Render Settings > Collection Visibility Controls",
-    "description": "Adds visibility control empties to each collection",
+    "description": "Control Collections visibility with Empty objects visibility",
     "warning": "",
     "wiki_url": "https://github.com/sorecords/collection_visibility_controls/blob/master/README.md",
     "tracker_url": "https://github.com/sorecords/collection_visibility_controls/issues",
@@ -42,7 +42,7 @@ from bpy.utils import register_class, unregister_class
 
 def getcols(parent):
     if not len(parent.children):
-        return
+        return []
     cols = []
     for child in parent.children:
         cols.append(child)
@@ -54,14 +54,28 @@ def getcols(parent):
 def getname(col):
     return f'{col.name}.visibility.cntrl'
 
+def getfcurvevalue(obj, data_path, frame):
+    ad = obj.animation_data
+    if not ad or not ad.action or not len(ad.action.fcurves):
+        return None
+    fc = [f for f in ad.action.fcurves if f.data_path==data_path]
+    return fc[0].evaluate(frame) if fc else None
+
+def setup_prop(col, obj, prop):
+    fr = bpy.context.scene.frame_current_final
+    value = getfcurvevalue(obj, prop, fr)
+    res = getattr(obj,prop) if value is None else value
+    if getattr(col,prop) != res:
+        setattr(col,prop,res)
+
 def setup_collection(col, obj):
     cntrl = bpy.context.scene.colcntrl
     if cntrl.render:
-        col.hide_render = obj.hide_render
+        setup_prop(col, obj, 'hide_render')
     if cntrl.viewport:
-        col.hide_viewport = obj.hide_viewport
+        setup_prop(col, obj, 'hide_viewport')
     if cntrl.select:
-        col.hide_select = obj.hide_select 
+        setup_prop(col, obj, 'hide_select')
 
 #frame_change_pre handler function
 
@@ -73,7 +87,8 @@ def collection_controls(self, context):
         name = getname(col)
         if not name in col.objects:
             continue
-        setup_collection(col, col.objects[name])            
+        setup_collection(col, col.objects[name])
+    sc.update_tag()
 
 # Property Group
 
@@ -161,6 +176,17 @@ class COLCNTRL_PT_hiderender(Panel):
         sep.prop(props, "viewport", icon = 'RESTRICT_VIEW_OFF')
         sep.prop(props, "select", icon = 'RESTRICT_SELECT_OFF')
 
+# execute on load
+
+def execonload(self, context):
+    scene = bpy.context.scene
+    for sc in bpy.data.scenes:
+        if sc.colcntrl.activate:
+            bpy.context.window.scene = sc
+            bpy.ops.colcntrl.setup()
+    bpy.context.window.scene = scene
+        
+
 classes = [
     ColCntrlProps,
     ColHideRenderSetup,
@@ -171,8 +197,12 @@ def register():
     for cl in classes:
         register_class(cl)
     bpy.types.Scene.colcntrl = PointerProperty(type=ColCntrlProps)
+    bpy.app.handlers.persistent(execonload)
+    bpy.app.handlers.load_post.append(execonload)
 
 def unregister():
+    while execonload in bpy.app.handlers.load_post:
+        bpy.app.handlers.load_post.remove(execonload)
     while collection_controls in bpy.app.handlers.frame_change_pre:
         bpy.app.handlers.frame_change_pre.remove(collection_controls)
     for cl in reversed(classes):
