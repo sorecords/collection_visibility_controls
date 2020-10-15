@@ -27,7 +27,7 @@ bl_info = {
     "blender": (2, 83, 3),
     "location": "Render Settings > Collection Visibility Controls",
     "description": "Control Collections visibility with Empty objects visibility",
-    "warning": "May cause Blender crashes while render animation",
+    "warning": "May cause Blender crash while render animation",
     "wiki_url": "https://github.com/sorecords/collection_visibility_controls/blob/master/README.md",
     "tracker_url": "https://github.com/sorecords/collection_visibility_controls/issues",
     "category": "Render"
@@ -201,13 +201,18 @@ def register():
     bpy.app.handlers.load_post.append(execonload)
 
 def unregister():
-    while execonload in bpy.app.handlers.load_post:
-        bpy.app.handlers.load_post.remove(execonload)
-    while collection_controls in bpy.app.handlers.frame_change_pre:
-        bpy.app.handlers.frame_change_pre.remove(collection_controls)
-    for cl in reversed(classes):
-        unregister_class(cl)
-        
-# Test
-if __name__ == '__main__':
-    register()
+    try:
+        while execonload in bpy.app.handlers.load_post:
+            bpy.app.handlers.load_post.remove(execonload)
+    except:
+        print("Error trying to remove execonload from load_post handler")
+    try:
+        while collection_controls in bpy.app.handlers.frame_change_pre:
+            bpy.app.handlers.frame_change_pre.remove(collection_controls)
+    except:
+        print("Error trying to remove collection_controls from frame_change_pre handler")
+    try:
+        for cl in reversed(classes):
+            unregister_class(cl)
+    except:
+        print("Error trying to unregister classes")
