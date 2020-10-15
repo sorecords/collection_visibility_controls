@@ -8,6 +8,8 @@
 
 # WARNING
 * This is a kind of hack out Blender render system, so in some cases it may cause crashes while rendering animation. Use with caution, at your own risk.
+* Disabling add-on in Blender add-on preferences also randomly crashes Blender due to Blender addon_utils module unstable work.
+* If you have any problems you can remove the add-on (can be done from the Preferences -> Add-ons menu), close and reopen Blender. Created Empties will stay but won't affect collections' visiblity anymore.
 
 # INSTALL:
 * Download ZIP file
