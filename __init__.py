@@ -23,7 +23,7 @@
 bl_info = {
     "name": "Collection Visibility Controls",
     "author": "Andrey Sokolov",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 83, 3),
     "location": "Render Settings > Collection Visibility Controls",
     "description": "Control Collections visibility with Empty objects visibility",
@@ -64,7 +64,7 @@ def getfcurvevalue(obj, data_path, frame):
 def setup_prop(col, obj, prop):
     fr = bpy.context.scene.frame_current_final
     value = getfcurvevalue(obj, prop, fr)
-    res = getattr(obj,prop) if value is None else value
+    res = int(getattr(obj,prop)) if value is None else int(value)
     if getattr(col,prop) != res:
         setattr(col,prop,res)
 
